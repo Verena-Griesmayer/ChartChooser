@@ -15,21 +15,23 @@ def get_seperator(sample: str) -> str:
 
 
 # reads the data of the file and returns headers and data
-def read_data(path: Path, encoding: str = "utf-8") -> Tuple[List[str], List[List[str]]]:
+def read_data(path: Path, encoding: str = "utf-8") -> Tuple[str, List[str], List[List[str]]]:
     text = path.read_text(encoding=encoding, errors="replace")
     lines = [ln for ln in text.splitlines() if ln.strip()]
 
-    if not lines:
-        raise ValueError("File is empty.")
+    if len(lines) < 2:
+        raise ValueError("File must contain at least a title line and a header line.")
 
-    delimiter = get_seperator("\n".join(lines[:10])) # gets first 10 lines to detect seperator
-    reader = csv.reader(lines, delimiter=delimiter)
+    title = lines[0].strip()
+
+    delimiter = get_seperator("\n".join(lines[1:11])) # gets first 10 lines to detect seperator
+    reader = csv.reader(lines[1:], delimiter=delimiter)
 
     rows = list(reader)
     header = [h.strip() for h in rows[0]]
     data = [[cell.strip() for cell in row] for row in rows[1:] if row]
 
-    return header, data
+    return title, header, data
 
 
 # DETECT NUMBERS
@@ -181,7 +183,7 @@ def extract_column(rows: List[List[str]], idx: int) -> List[str]:
             out.append("")
     return out
 
-def plot_decision(header: List[str], rows: List[List[str]], decision: ChartDecision) -> None:
+def plot_decision(header: List[str], rows: List[List[str]], decision: ChartDecision, title: Optional[str] = None) -> None:
     params = decision.params or {}
 
     if decision.chart_type == "table":
@@ -204,7 +206,7 @@ def plot_decision(header: List[str], rows: List[List[str]], decision: ChartDecis
         plt.hist(nums, bins=params.get("bins", 20))
         plt.xlabel(decision.x_col)
         plt.ylabel("Frequency")
-        plt.title(f"Histogramm: {decision.x_col}")
+        plt.title(title or f"Histogramm: {decision.x_col}")
         plt.tight_layout()
         plt.show()
         return
@@ -231,7 +233,7 @@ def plot_decision(header: List[str], rows: List[List[str]], decision: ChartDecis
         plt.scatter(xs, ys)
         plt.xlabel(decision.x_col)
         plt.ylabel(decision.y_col)
-        plt.title(f"Scatter: {decision.y_col} vs {decision.x_col}")
+        plt.title(title or f"Scatter: {decision.y_col} vs {decision.x_col}")
         plt.tight_layout()
         plt.show()
         return
@@ -261,7 +263,8 @@ def plot_decision(header: List[str], rows: List[List[str]], decision: ChartDecis
         plt.plot(xs, ys)
         plt.xlabel(decision.x_col)
         plt.ylabel(decision.y_col)
-        plt.title(f"Zeitreihe: {decision.y_col}")
+        plt.title(title or f"Line: {decision.y_col}")
+
         plt.tight_layout()
         plt.show()
         return
@@ -300,7 +303,7 @@ def plot_decision(header: List[str], rows: List[List[str]], decision: ChartDecis
         plt.bar(labels, values)
         plt.xlabel(decision.x_col)
         plt.ylabel(decision.y_col)
-        plt.title(f"{decision.y_col} to {decision.x_col}")
+        plt.title(title or f"{decision.y_col} zu {decision.x_col}")
         plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
         plt.show()
@@ -311,14 +314,15 @@ def plot_decision(header: List[str], rows: List[List[str]], decision: ChartDecis
 
 # All-in-one function
 def analyze_and_plot(path: Path) -> None:
-    header, rows = read_data(path)
+    title, header, rows = read_data(path)
     prof = profile_dataset(header, rows)
     decision = choose_chart(prof)
 
     print("Detected scheme:", prof.schema)
     print("Diagram decision:", decision)
+    print("Chart title:", title)
 
-    plot_decision(header, rows, decision)
+    plot_decision(header, rows, decision, title=title)
 
 
 def main():
