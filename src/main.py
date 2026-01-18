@@ -340,6 +340,7 @@ def analyze_and_plot(path: Path) -> None:
     print("Detected scheme:", prof.schema)
     print("Diagram decision:", decision)
     print("Chart title:", title)
+    print("")
 
     plot_decision(header, rows, decision, title=title)
 
