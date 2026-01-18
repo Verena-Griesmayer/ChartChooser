@@ -215,7 +215,7 @@ def plot_decision(header: List[str], rows: List[List[str]], decision: ChartDecis
             raise ValueError("No numerical values found for histogram.")
 
         plt.figure()
-        plt.hist(nums, bins=params.get("bins", 20))
+        plt.hist(nums, bins=params.get("bins", 20), color=random_color())
         plt.xlabel(decision.x_col)
         plt.ylabel("Frequency")
         plt.title(title or f"Histogramm: {decision.x_col}")
@@ -242,7 +242,7 @@ def plot_decision(header: List[str], rows: List[List[str]], decision: ChartDecis
             raise ValueError("No matching numerical pairs found for Scatter.")
 
         plt.figure()
-        plt.scatter(xs, ys)
+        plt.scatter(xs, ys, color=random_color())
         plt.xlabel(decision.x_col)
         plt.ylabel(decision.y_col)
         plt.title(title or f"Scatter: {decision.y_col} vs {decision.x_col}")
@@ -272,7 +272,7 @@ def plot_decision(header: List[str], rows: List[List[str]], decision: ChartDecis
         ys = [p[1] for p in points]
 
         plt.figure()
-        plt.plot(xs, ys)
+        plt.plot(xs, ys, color=random_color())
         plt.xlabel(decision.x_col)
         plt.ylabel(decision.y_col)
         plt.title(title or f"Line: {decision.y_col}")
@@ -312,7 +312,7 @@ def plot_decision(header: List[str], rows: List[List[str]], decision: ChartDecis
         values = [p[1] for p in pairs]
 
         plt.figure()
-        plt.bar(labels, values)
+        plt.bar(labels, values, color=random_colors(len(values)))
         plt.xlabel(decision.x_col)
         plt.ylabel(decision.y_col)
         plt.title(title or f"{decision.y_col} zu {decision.x_col}")
