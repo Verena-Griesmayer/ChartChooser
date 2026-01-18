@@ -5,6 +5,18 @@ from datetime import datetime
 from typing import List, Optional, Tuple, Dict, Any
 
 import matplotlib.pyplot as plt
+import random
+
+
+# picks one random color
+def random_color() -> str:
+    palette = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+    return random.choice(palette)
+
+# picks n random colors
+def random_colors(n: int) -> List[str]:
+    palette = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+    return [random.choice(palette) for _ in range(n)]
 
 
 # detects the seperator with the first 10 lines
