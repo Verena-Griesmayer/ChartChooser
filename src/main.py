@@ -6,6 +6,7 @@ from typing import List, Optional, Tuple, Dict, Any
 
 import matplotlib.pyplot as plt
 import random
+import matplotlib.dates as mdates
 
 
 # picks one random color
@@ -275,8 +276,14 @@ def plot_decision(header: List[str], rows: List[List[str]], decision: ChartDecis
         plt.plot(xs, ys, color=random_color())
         plt.xlabel(decision.x_col)
         plt.ylabel(decision.y_col)
-        plt.title(title or f"Line: {decision.y_col}")
+        plt.title(title or f"Zeitreihe: {decision.y_col}")
 
+        ax = plt.gca()
+
+        ax.xaxis.set_major_locator(mdates.AutoDateLocator())
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%d.%m."))  # z.B. 01.01.
+
+        plt.gcf().autofmt_xdate(rotation=45, ha="right")  # lesbar drehen
         plt.tight_layout()
         plt.show()
         return
@@ -342,10 +349,12 @@ def main():
     data_file2 = Path(__file__).parent.parent / "Test_Data" / "data02.csv"
     data_file3 = Path(__file__).parent.parent / "Test_Data" / "data03.csv"
     data_file4 = Path(__file__).parent.parent / "Test_Data" / "data04.csv"
+    data_file5 = Path(__file__).parent.parent / "Test_Data" / "data05.csv"
     analyze_and_plot(data_file1)
     analyze_and_plot(data_file2)
     analyze_and_plot(data_file3)
     analyze_and_plot(data_file4)
+    analyze_and_plot(data_file5)
 
 
 if __name__ == "__main__":
